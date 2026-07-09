@@ -52,7 +52,7 @@ class AdminController extends Controller
         $hariIni = \Carbon\Carbon::now()->locale('id')->isoFormat('dddd');
         $jamSekarang = \Carbon\Carbon::now('Asia/Jakarta')->format('H:i');
         $jamMasuk = '07:00';
-        $jamPulang = '17:00';
+        $jamPulang = '23:00';
         
         $isLuarJamKerja = ($jamSekarang < $jamMasuk || $jamSekarang > $jamPulang);
 

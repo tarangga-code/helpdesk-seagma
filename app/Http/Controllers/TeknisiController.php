@@ -28,12 +28,19 @@ class TeknisiController extends Controller
         return view('teknisi-dashboard', compact('tiketSaya', 'totalSelesai'));
     }
 
-    // Fungsi utama untuk menyelesaikan tugas wajib dengan foto bukti lapangan
+    // Fungsi utama untuk menyelesaikan tugas wajib dengan foto bukti lapangan & koordinat geotagging
     public function selesaikanTugas(Request $request, $id)
     {
+        // Menambahkan validasi wajib kirim koordinat dari perangkat teknisi
         $request->validate([
             // Validasi file maksimal 5MB aman untuk jepretan kamera HP resolusi tinggi
             'foto_bukti' => 'required|image|mimes:jpeg,png,jpg|max:5120', 
+            'latitude_teknisi' => 'required|numeric',
+            'longitude_teknisi' => 'required|numeric',
+        ], [
+            // Pesan kustom jika teknisi belum mengaktifkan GPS / izin lokasi di HP-nya
+            'latitude_teknisi.required' => 'Gagal membaca lokasi. Pastikan GPS HP aktif dan izin lokasi browser diizinkan.',
+            'longitude_teknisi.required' => 'Gagal membaca lokasi. Pastikan GPS HP aktif dan izin lokasi browser diizinkan.',
         ]);
 
         // Cari tiket dan pastikan tiket ini memang milik teknisi yang sedang login
@@ -49,6 +56,10 @@ class TeknisiController extends Controller
             
             $tiket->foto_bukti = $filename;
         }
+
+        // Menyimpan koordinat lokasi terkini tempat teknisi menekan tombol selesai
+        $tiket->latitude_teknisi = $request->latitude_teknisi;
+        $tiket->longitude_teknisi = $request->longitude_teknisi;
 
         // Ubah status tiket menjadi selesai
         $tiket->status = 'selesai';

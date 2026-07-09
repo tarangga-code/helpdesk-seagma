@@ -25,9 +25,8 @@
         }
         .stat-glow:hover::after { opacity: 1; }
 
-        /* Memastikan container Leaflet tidak tertutup elemen luar */
-        #map { z-index: 1; }
-        /* Kustomisasi tampilan instruksi rute Leaflet agar lebih bersih di HP */
+        /* Mencegah peta meluap dan mengatur UI rute agar rapi di HP */
+        .leaflet-container { z-index: 1 !important; font-family: 'Inter', sans-serif;}
         .leaflet-routing-container {
             background-color: rgba(255, 255, 255, 0.95) !important;
             padding: 10px !important;
@@ -36,6 +35,7 @@
             max-height: 150px !important;
             overflow-y: auto !important;
             font-size: 11px !important;
+            z-index: 1000 !important;
         }
     </style>
 
@@ -101,7 +101,6 @@
                 {{-- ================= STAT CARDS ================= --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-20">
 
-                    {{-- TUGAS AKTIF — dark navy card --}}
                     <div class="stat-glow relative overflow-hidden bg-gray-950 rounded-[2rem] p-6 shadow-xl flex items-center justify-between">
                         <div class="absolute -right-6 -bottom-8 w-28 h-28 rounded-full bg-white/5"></div>
                         <div class="relative z-10">
@@ -116,13 +115,10 @@
                             </p>
                         </div>
                         <div class="relative z-10 w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-                            </svg>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" /></svg>
                         </div>
                     </div>
 
-                    {{-- TOTAL SELESAI — red card --}}
                     <div class="stat-glow relative overflow-hidden bg-red-600 rounded-[2rem] p-6 shadow-xl shadow-red-200/40 flex items-center justify-between">
                         <div class="absolute -right-6 -bottom-8 w-28 h-28 rounded-full bg-white/10"></div>
                         <div class="relative z-10">
@@ -137,14 +133,12 @@
                             </p>
                         </div>
                         <div class="relative z-10 w-12 h-12 rounded-2xl bg-white/15 flex items-center justify-center text-white shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                     </div>
                 </div>
                 
-                {{-- ================= INDIKATOR STATUS KEHADIRAN (READ ONLY - KENDALI ADMIN) ================= --}}
+                {{-- ================= INDIKATOR STATUS ================= --}}
                 <div class="bg-white rounded-[2rem] p-6 shadow-xl shadow-gray-200/20 border border-gray-100/50 flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
                     <div class="flex items-center gap-3.5 text-center sm:text-left">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 {{ auth()->user()->status === 'libur' ? 'bg-red-50 text-red-600' : 'bg-emerald-50 text-emerald-600' }}">
@@ -160,7 +154,6 @@
                             </p>
                         </div>
                     </div>
-                    
                     <div class="text-[10px] text-slate-400 italic text-center sm:text-right bg-slate-50 px-4 py-2 rounded-xl border border-slate-100">
                         *Perubahan jadwal shift & libur dikendalikan terpusat oleh Admin.
                     </div>
@@ -191,38 +184,46 @@
                                     </div>
 
                                     <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex-1 flex flex-col justify-start">
-                                        <span class="text-[9px] font-bold text-red-500 uppercase tracking-wider block mb-1">Detail Keluhan (Instruksi Admin)</span>
+                                        <span class="text-[9px] font-bold text-red-500 uppercase tracking-wider block mb-1">Detail Keluhan</span>
                                         <p class="text-xs font-semibold text-gray-800 mb-1">{{ $tiket->judul }}</p>
                                         <p class="text-[11px] text-gray-500 font-light leading-relaxed">{{ $tiket->deskripsi }}</p>
                                     </div>
 
-                                    {{-- FORM PENYELESAIAN TUGAS (MENGGUNAKAN KAMERA) --}}
-                                    <form action="{{ route('teknisi.pengaduan.selesai', $tiket->id) }}" method="POST" enctype="multipart/form-data" class="pt-2 space-y-3">
+                                    <form action="{{ route('teknisi.pengaduan.selesai', $tiket->id) }}" method="POST" enctype="multipart/form-data" class="pt-2 space-y-3" onsubmit="return validasiSelesai('{{ $tiket->id }}')">
                                         @csrf @method('PATCH')
                                         
-                                        {{-- AREA UPLOAD FOTO BUKTI --}}
-                                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-500 border-dashed">
-                                            <label for="foto_bukti_{{ $tiket->id }}" class="block text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-2">
-                                                Ambil Foto Bukti Selesai (Kamera HP) <span class="text-red-500">*</span>
-                                            </label>
+                                        {{-- NAMA INPUT DISESUAIKAN DENGAN NAMA KOLOM BARU DI DATABASE --}}
+                                        <input type="hidden" name="latitude_teknisi" id="lat_teknisi_{{ $tiket->id }}" value="">
+                                        <input type="hidden" name="longitude_teknisi" id="lng_teknisi_{{ $tiket->id }}" value="">
+                                        
+                                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-300 border-dashed">
+                                            
+                                            <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                                                <label for="foto_bukti_{{ $tiket->id }}" class="text-[10px] font-bold text-gray-700 uppercase tracking-wider mb-0">
+                                                    Ambil Foto Bukti <span class="text-red-500">*</span>
+                                                </label>
+                                                
+                                                <div id="status_gps_{{ $tiket->id }}" class="flex items-center gap-1.5 text-[9px] font-bold text-red-600 bg-red-100 px-2 py-1.5 rounded-md border border-red-200">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span>
+                                                    Mencari Sinyal GPS...
+                                                </div>
+                                            </div>
                                             
                                             <input type="file" 
-                                                   id="foto_bukti_{{ $tiket->id }}" 
-                                                   name="foto_bukti" 
-                                                   accept="image/*" 
-                                                   capture="environment"
-                                                   required
-                                                   class="block w-full text-xs text-black file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-red-600 transition-all cursor-pointer">
-                                                   
-                                            <p class="text-[9px] text-black mt-1.5 font-light">
-                                                Format: JPG, PNG. Maksimal 5MB. Klik tombol di atas untuk langsung membuka kamera belakang HP Anda.
+                                                id="foto_bukti_{{ $tiket->id }}" 
+                                                name="foto_bukti" 
+                                                accept="image/*" 
+                                                capture="environment"
+                                                required
+                                                class="block w-full text-xs text-black file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-red-600 transition-all cursor-pointer">
+                                                
+                                            <p class="text-[9px] text-gray-700 mt-3 font-medium bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                                                ⚠️ <b>Peringatan:</b> Lokasi GPS Anda saat ini akan dilampirkan otomatis dan dicocokkan dengan koordinat rumah pelanggan oleh sistem.
                                             </p>
                                         </div>
 
-                                        <button type="submit" onclick="return confirm('Apakah Anda yakin sudah mengunggah foto bukti yang benar dan menyelesaikan gangguan ini?');" class="w-full flex justify-center items-center py-3 bg-gray-950 hover:bg-red-600 text-white text-xs font-bold uppercase tracking-widest rounded-xl shadow-lg transition-all duration-300">
-                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                                            </svg>
+                                        <button type="submit" class="w-full flex justify-center items-center py-3 bg-gray-950 hover:bg-red-600 text-white text-xs font-bold uppercase tracking-widest rounded-xl shadow-lg transition-all duration-300">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                             Selesaikan Tugas Lapangan
                                         </button>
                                     </form>
@@ -233,9 +234,9 @@
                                     <span class="text-[9px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Peta Navigasi & Rute Jalan Otomatis</span>
                                     <div class="relative w-full h-72 lg:h-full min-h-[320px] rounded-2xl overflow-hidden border border-gray-200/80 shadow-inner bg-gray-100">
 
-                                        <div id="map" class="absolute inset-0 w-full h-full"></div>
+                                        <div id="map_{{ $tiket->id }}" class="absolute inset-0 w-full h-full z-10"></div>
 
-                                        <div id="gps-error" class="hidden absolute top-3 inset-x-3 z-50 bg-red-500/90 backdrop-blur-sm text-white text-[10px] p-2.5 rounded-xl text-center font-semibold tracking-wide shadow-md">
+                                        <div id="gps-error_{{ $tiket->id }}" class="hidden absolute top-3 inset-x-3 z-50 bg-red-500/90 backdrop-blur-sm text-white text-[10px] p-2.5 rounded-xl text-center font-semibold tracking-wide shadow-md">
                                             ⚠️ GPS Gagal terdeteksi. Pastikan izin lokasi browser Anda aktif.
                                         </div>
 
@@ -261,67 +262,122 @@
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
     <script>
+        // Validasi Form
+        window.validasiSelesai = function(tiketId) {
+            const latInput = document.getElementById('lat_teknisi_' + tiketId);
+            if (!latInput || !latInput.value) {
+                alert("Sinyal GPS belum terkunci! Pastikan GPS HP Anda aktif dan tunggu indikator menjadi hijau (GPS Terkunci) sebelum menyelesaikan tugas.");
+                return false; 
+            }
+            return confirm('Apakah Anda yakin foto sudah benar dan Anda saat ini berada di lokasi pelanggan?');
+        };
+
         document.addEventListener('DOMContentLoaded', function () {
-            // Memeriksa apakah ada tugas aktif yang diambil teknisi
-            @if($tiketSaya->first())
-                // Ambil koordinat target pelanggan langsung dari database backend Laravel Anda
-                const destLat = parseFloat("{{ $tiketSaya->first()->latitude }}");
-                const destLng = parseFloat("{{ $tiketSaya->first()->longitude }}");
+            
+            const dataTiket = [
+                @foreach($tiketSaya as $tiket)
+                {
+                    id: "{{ $tiket->id }}",
+                    lat: parseFloat("{{ $tiket->latitude }}") || -8.1331,
+                    lng: parseFloat("{{ $tiket->longitude }}") || 113.2241
+                },
+                @endforeach
+            ];
 
-                // Fallback default jika database Anda belum terisi data koordinat (Dummy default: Lumajang)
-                const targetLat = isNaN(destLat) ? -8.1331 : destLat;
-                const targetLng = isNaN(destLng) ? 113.2241 : destLng;
+            if(dataTiket.length === 0) return; 
 
-                // 1. Inisialisasi Kanvas Peta Leaflet dasar
-                const map = L.map('map').setView([targetLat, targetLng], 14);
+            const ikonTeknisi = L.divIcon({
+                html: `
+                    <div class="relative flex items-center justify-center">
+                        <span class="animate-ping absolute inline-flex h-8 w-8 rounded-full bg-red-500 opacity-60"></span>
+                        <div class="relative w-7 h-7 bg-red-600 rounded-full border-2 border-white flex items-center justify-center shadow-lg">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                    </div>`,
+                className: '', iconSize: [32, 32], iconAnchor: [16, 16]
+            });
 
-                // 2. Load Desain Tile Peta dari OpenStreetMap Gratisan
+            const ikonPelanggan = L.divIcon({
+                html: `
+                    <div class="w-8 h-8 bg-emerald-600 rounded-full border-2 border-white flex items-center justify-center shadow-lg text-white">
+                        <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                    </div>`,
+                className: '', iconSize: [32, 32], iconAnchor: [16, 16]
+            });
+
+            const maps = {};
+            const routingControls = {};
+
+            dataTiket.forEach(tiket => {
+                maps[tiket.id] = L.map('map_' + tiket.id).setView([tiket.lat, tiket.lng], 14);
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap contributors'
-                }).addTo(map);
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(maps[tiket.id]);
+            });
 
-                // 3. Ambil Geolokasi GPS Real-Time dari Ponsel Pintar Teknisi
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        function (position) {
-                            const userLat = position.coords.latitude;
-                            const userLng = position.coords.longitude;
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    function (position) {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+                        const userLatLng = L.latLng(userLat, userLng);
 
-                            // 4. Gambar Garis Rute Otomatis (Lokasi Teknisi -> Lokasi Pelanggan), warna merah sesuai tema brand
-                            L.Routing.control({
-                                waypoints: [
-                                    L.latLng(userLat, userLng),   // Titik Mulai (HP Teknisi)
-                                    L.latLng(targetLat, targetLng) // Titik Tujuan (Rumah Pelanggan)
-                                ],
-                                lineOptions: {
-                                    styles: [{ color: '#dc2626', weight: 6, opacity: 0.85 }] // Garis merah tebal sesuai aksen brand
-                                },
-                                createMarker: function(i, wp, nWps) {
-                                    // Membuat penanda visual kustom pembeda titik start & finish
-                                    if (i === 0) {
-                                        return L.marker(wp.latLng).bindPopup("<b>Lokasi Anda Sekarang</b>").openPopup();
-                                    } else {
-                                        return L.marker(wp.latLng).bindPopup("<b>Rumah Pelanggan (GANGGUAN)</b>");
-                                    }
-                                },
-                                routeWhileDragging: false,
-                                addWaypoints: false // Menutup akses manipulasi rute manual oleh user
-                            }).addTo(map);
-                        },
-                        function (error) {
-                            // Handler jika izin share-location diblokir teknisi
-                            console.warn("Akses GPS ditolak teknisi, menampilkan marker statis tujuan.");
-                            document.getElementById('gps-error').classList.remove('hidden');
-                            L.marker([targetLat, targetLng]).addTo(map)
-                                .bindPopup("<b>Lokasi Pelanggan</b><br>Gagal melacak rute karena GPS Anda mati.").openPopup();
-                        },
-                        { enableHighAccuracy: true, timeout: 10000 }
-                    );
-                } else {
-                    // Browser jadul yang tidak mendukung Geolokasi API
-                    L.marker([targetLat, targetLng]).addTo(map).bindPopup("<b>Lokasi Pelanggan</b>").openPopup();
-                }
-            @endif
+                        dataTiket.forEach(tiket => {
+                            const targetLatLng = L.latLng(tiket.lat, tiket.lng);
+
+                            // MENGISI ELEMENT HIDDEN INPUT TEKNISI YANG BARU
+                            const inputLat = document.getElementById('lat_teknisi_' + tiket.id);
+                            const inputLng = document.getElementById('lng_teknisi_' + tiket.id);
+                            const statusGps = document.getElementById('status_gps_' + tiket.id);
+
+                            if(inputLat) inputLat.value = userLat;
+                            if(inputLng) inputLng.value = userLng;
+
+                            if(statusGps) {
+                                statusGps.className = "flex items-center gap-1.5 text-[9px] font-bold text-emerald-700 bg-emerald-100 px-2 py-1.5 rounded-md border border-emerald-200 transition-all";
+                                statusGps.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> GPS Terkunci`;
+                            }
+
+                            if (!routingControls[tiket.id]) {
+                                routingControls[tiket.id] = L.Routing.control({
+                                    waypoints: [userLatLng, targetLatLng],
+                                    lineOptions: { styles: [{ color: '#dc2626', weight: 6, opacity: 0.85 }] },
+                                    createMarker: function(i, wp) {
+                                        return L.marker(wp.latLng, { icon: i === 0 ? ikonTeknisi : ikonPelanggan })
+                                                .bindPopup(i === 0 ? "<b>Lokasi Anda</b>" : "<b>Pelanggan</b>");
+                                    },
+                                    routeWhileDragging: false,
+                                    addWaypoints: false,
+                                    fitSelectedRoutes: false
+                                }).addTo(maps[tiket.id]);
+                                
+                                maps[tiket.id].setView(userLatLng, 15);
+                            } else {
+                                routingControls[tiket.id].spliceWaypoints(0, 1, userLatLng);
+                                maps[tiket.id].panTo(userLatLng);
+                            }
+                        });
+                    },
+                    function (error) {
+                        console.warn("Akses GPS ditolak.");
+                        dataTiket.forEach(tiket => {
+                            document.getElementById('gps-error_' + tiket.id)?.classList.remove('hidden');
+                            if(!routingControls[tiket.id]) {
+                                L.marker([tiket.lat, tiket.lng], { icon: ikonPelanggan }).addTo(maps[tiket.id]);
+                            }
+                        });
+                    },
+                    { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+                );
+            } else {
+                dataTiket.forEach(tiket => {
+                    L.marker([tiket.lat, tiket.lng], { icon: ikonPelanggan }).addTo(maps[tiket.id]);
+                });
+            }
         });
     </script>
 </x-app-layout>
