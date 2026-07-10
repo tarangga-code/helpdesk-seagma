@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@400;500;600;700;800&display=swap');
 
@@ -28,7 +28,7 @@
         .stat-glow:hover::after { opacity: 1; }
     </style>
 
-    <div class="relative min-h-screen bg-white bg-gradient-to-b from-white via-white to-slate-100/50 pb-16">
+    <div class="relative min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-80px)] bg-white bg-gradient-to-b from-white via-white to-slate-100/50 pb-16">
 
         <div class="fixed inset-0 z-0 bg-grid-pattern opacity-50"></div>
         <div class="fixed top-[-5%] right-[-5%] w-[600px] h-[600px] bg-red-50/30 rounded-full blur-[130px] z-0 pointer-events-none"></div>
@@ -99,7 +99,7 @@
                 {{-- ================= STAT CARDS ================= --}}
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10 relative z-20">
 
-                    {{-- TOTAL PELANGGAN — dark navy card --}}
+                    {{-- TOTAL PELANGGAN â€” dark navy card --}}
                     <a href="{{ route('pimpinan.users.list', 'pelanggan') }}"
                         class="stat-glow relative overflow-hidden bg-gray-950 rounded-[2rem] p-6 shadow-xl flex items-center justify-between hover:-translate-y-1 duration-300 transition block">
                         <div class="absolute -right-6 -bottom-8 w-28 h-28 rounded-full bg-white/5"></div>
@@ -122,7 +122,7 @@
                         </div>
                     </a>
 
-                    {{-- DATA TEKNISI — red card --}}
+                    {{-- DATA TEKNISI â€” red card --}}
                     <a href="{{ route('pimpinan.users.list', 'teknisi') }}"
                         class="stat-glow relative overflow-hidden bg-red-600 rounded-[2rem] p-6 shadow-xl shadow-red-200/40 flex items-center justify-between hover:-translate-y-1 duration-300 transition block">
                         <div class="absolute -right-6 -bottom-8 w-28 h-28 rounded-full bg-white/10"></div>
@@ -145,7 +145,7 @@
                         </div>
                     </a>
 
-                    {{-- DATA ADMIN — emerald card --}}
+                    {{-- DATA ADMIN â€” emerald card --}}
                     <a href="{{ route('pimpinan.users.list', 'admin') }}"
                         class="stat-glow relative overflow-hidden bg-emerald-600 rounded-[2rem] p-6 shadow-xl shadow-emerald-200/40 flex items-center justify-between hover:-translate-y-1 duration-300 transition block">
                         <div class="absolute -right-6 -bottom-8 w-28 h-28 rounded-full bg-white/10"></div>

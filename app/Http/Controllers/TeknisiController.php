@@ -65,6 +65,13 @@ class TeknisiController extends Controller
         $tiket->status = 'selesai';
         $tiket->save();
 
+        // Kirim notifikasi ke pelanggan
+        \App\Models\Notification::create([
+            'user_id' => $tiket->pelanggan_id,
+            'title' => 'Tiket Selesai Dikerjakan',
+            'message' => 'Status tiket Anda "' . $tiket->judul . '" telah diubah menjadi: Selesai.',
+        ]);
+
         return redirect()->route('teknisi.dashboard')->with('success', 'Luar biasa! Tugas lapangan telah diselesaikan dan bukti berhasil diunggah.');
     }
 

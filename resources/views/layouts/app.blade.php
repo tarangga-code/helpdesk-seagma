@@ -81,6 +81,51 @@
             {{ $slot }}
         </main>
     </div>
+
+    {{-- HTML5 Browser Web Notifications Script --}}
+    @auth
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Minta izin notifikasi browser jika belum disetujui
+            if (Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            let lastNotifId = 0;
+
+            // Dapatkan ID notifikasi terbesar saat ini agar notifikasi lama tidak pop-up ulang
+            fetch('/notifications/poll')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        lastNotifId = Math.max(...data.map(n => n.id));
+                    }
+                    // Jalankan polling berkala setiap 10 detik
+                    setInterval(pollNotifications, 10000);
+                });
+
+            function pollNotifications() {
+                fetch(`/notifications/poll?last_id=${lastNotifId}`)
+                    .then(res => res.json())
+                    .then(newNotifs => {
+                        if (newNotifs.length > 0) {
+                            newNotifs.forEach(notif => {
+                                // Tampilkan notifikasi native OS browser
+                                if (Notification.permission === 'granted') {
+                                    new Notification(notif.title, {
+                                        body: notif.message,
+                                        icon: '{{ asset("images/logo.png") }}'
+                                    });
+                                }
+                                lastNotifId = Math.max(lastNotifId, notif.id);
+                            });
+                        }
+                    })
+                    .catch(err => console.error("Error polling notifications:", err));
+            }
+        });
+    </script>
+    @endauth
 </body>
 
 </html>

@@ -1,11 +1,11 @@
-<x-app-layout>
+﻿<x-app-layout>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         .font-jakarta { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
     
-    <div class="relative min-h-screen bg-[#fafbfc] font-jakarta overflow-hidden pb-12">
+    <div class="relative min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-80px)] bg-[#fafbfc] font-jakarta overflow-hidden pb-12">
         <div class="absolute inset-0 z-0 bg-[linear-gradient(to_right,#8080800f_1px,transparent_1px),linear-gradient(to_bottom,#8080800f_1px,transparent_1px)] bg-[size:32px_32px]"></div>
 
         <div x-data="{ openModal: false }" class="relative z-10 max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">

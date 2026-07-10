@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap');
 
@@ -19,7 +19,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 
-    <div class="relative min-h-screen bg-slate-50 pb-16 overflow-hidden">
+    <div class="relative min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-80px)] bg-slate-50 pb-16 overflow-hidden">
         <div class="fixed inset-0 z-0 bg-grid-pattern opacity-60"></div>
         <div class="fixed top-[-10%] right-[-5%] w-[600px] h-[600px] bg-red-400/10 rounded-full blur-[120px] z-0 pointer-events-none"></div>
         <div class="fixed bottom-[-10%] left-[-5%] w-[600px] h-[600px] bg-rose-400/10 rounded-full blur-[120px] z-0 pointer-events-none"></div>
@@ -312,7 +312,7 @@
                             <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                             </svg>
-                            <input type="text" x-model="search" placeholder="Cari pelanggan atau tiket teknisi"
+                            <input type="text" x-model="search" placeholder="Cari pelanggan, tiket, atau nama teknisi"
                                 class="w-full pl-9 pr-4 py-2.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-300 placeholder:text-slate-400">
                         </div>
 
@@ -376,7 +376,8 @@
                                             ? $categoryBadgePalette[crc32($tiket->kategori->nama_kategori) % count($categoryBadgePalette)]
                                             : 'bg-slate-100 text-slate-500 ring-slate-200';
 
-                                        $searchHaystack = Str::lower($custName . ' ' . $tiket->judul . ' ' . ($tiket->nomor_tiket ?? $tiket->id));
+                                        $techName = $tiket->teknisi->name ?? 'Belum Ditugaskan';
+                                        $searchHaystack = Str::lower($custName . ' ' . $tiket->judul . ' ' . ($tiket->nomor_tiket ?? $tiket->id) . ' ' . $techName);
                                     @endphp
                                     <tr
                                         data-search="{{ $searchHaystack }}"

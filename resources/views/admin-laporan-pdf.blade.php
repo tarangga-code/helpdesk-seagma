@@ -218,7 +218,19 @@
 
                     <td class="text-center">
                         @if ($tiket->foto_bukti)
-                            <img src="{{ public_path('storage/' . $tiket->foto_bukti) }}" class="foto-bukti" alt="Bukti">
+                            @php
+                                $path = str_contains($tiket->foto_bukti, 'bukti_selesai/') 
+                                    ? 'storage/' . $tiket->foto_bukti 
+                                    : 'storage/bukti_selesai/' . $tiket->foto_bukti;
+                                $fullPath = public_path($path);
+                            @endphp
+                            @if (file_exists($fullPath))
+                                <img src="{{ $fullPath }}" class="foto-bukti" alt="Bukti">
+                            @else
+                                <div style="font-size: 9px; color: #cbd5e0; margin-top: 10px; font-style: italic;">
+                                    - Gambar Tidak Ditemukan -
+                                </div>
+                            @endif
                         @else
                             <div style="font-size: 9px; color: #cbd5e0; margin-top: 10px; font-style: italic;">
                                 - Tidak ada -

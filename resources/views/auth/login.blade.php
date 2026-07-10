@@ -24,7 +24,7 @@
         }
     </style>
 </head>
-<body class="h-[100dvh] w-full overflow-hidden antialiased text-gray-800 bg-gray-50 flex items-center justify-center selection:bg-red-600 selection:text-white relative p-4">
+<body class="min-h-[100dvh] w-full overflow-y-auto antialiased text-gray-800 bg-gray-50 flex items-center justify-center selection:bg-red-600 selection:text-white relative p-4 py-8">
 
     <div class="absolute inset-0 z-[-1] bg-grid-pattern">
         <div class="absolute inset-0 bg-gradient-to-b from-white/40 via-white/80 to-white"></div>
@@ -35,7 +35,7 @@
 
     <div class="w-full max-w-[420px] relative z-10">
         
-        <div class="bg-white/70 backdrop-blur-2xl p-8 sm:p-10 shadow-2xl shadow-gray-200/50 rounded-[2rem] border border-white/80 ring-1 ring-gray-100/50 flex flex-col">
+        <div class="bg-white/70 backdrop-blur-2xl p-6 sm:p-10 shadow-2xl shadow-gray-200/50 rounded-3xl sm:rounded-[2rem] border border-white/80 ring-1 ring-gray-100/50 flex flex-col">
             
             <div class="text-center mb-8">
                 <img class="mx-auto h-12 w-auto object-contain drop-shadow-sm mb-4" src="{{ asset('images/logo.png') }}" alt="Logo PT Seagma">

@@ -105,6 +105,8 @@ class AdminController extends Controller
         ]);
 
         $tiket = Tiket::findOrFail($id);
+        $oldStatus = $tiket->status;
+        $oldTeknisiId = $tiket->teknisi_id;
 
         $tiket->status = $request->status;
         
@@ -118,6 +120,24 @@ class AdminController extends Controller
         }
 
         $tiket->save();
+
+        // Notifikasi ke pelanggan jika status berubah
+        if ($oldStatus != $tiket->status) {
+            \App\Models\Notification::create([
+                'user_id' => $tiket->pelanggan_id,
+                'title' => 'Status Tiket Diperbarui',
+                'message' => 'Status tiket Anda "' . $tiket->judul . '" telah diubah menjadi: ' . ucfirst($tiket->status) . '.',
+            ]);
+        }
+
+        // Notifikasi ke teknisi jika mendapat tugas baru
+        if ($tiket->teknisi_id && $oldTeknisiId != $tiket->teknisi_id) {
+            \App\Models\Notification::create([
+                'user_id' => $tiket->teknisi_id,
+                'title' => 'Tugas Tiket Baru',
+                'message' => 'Anda ditugaskan untuk menangani tiket baru: "' . $tiket->judul . '".',
+            ]);
+        }
 
         return redirect()
             ->route('admin.dashboard')
@@ -135,6 +155,20 @@ class AdminController extends Controller
         $tiket->teknisi_id = $request->teknisi_id;
         $tiket->status = 'diproses';
         $tiket->save();
+
+        // Kirim notifikasi ke pelanggan
+        \App\Models\Notification::create([
+            'user_id' => $tiket->pelanggan_id,
+            'title' => 'Status Tiket Diperbarui',
+            'message' => 'Status tiket Anda "' . $tiket->judul . '" telah diubah menjadi: Diproses.',
+        ]);
+
+        // Kirim notifikasi ke teknisi
+        \App\Models\Notification::create([
+            'user_id' => $tiket->teknisi_id,
+            'title' => 'Tugas Tiket Baru',
+            'message' => 'Anda ditugaskan untuk menangani tiket baru: "' . $tiket->judul . '".',
+        ]);
         
         return redirect()
             ->route('admin.dashboard')

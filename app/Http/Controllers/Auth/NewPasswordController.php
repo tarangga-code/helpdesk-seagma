@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
@@ -35,27 +35,43 @@ class NewPasswordController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        // Here we will attempt to reset the user's password. If it is successful we
-        // will update the password on an actual user model and persist it to the
-        // database. Otherwise we will parse the error and return the response.
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user) use ($request) {
-                $user->forceFill([
-                    'password' => Hash::make($request->password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+        // Cek record token (OTP) di database
+        $record = DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->where('token', $request->token)
+            ->first();
 
-                event(new PasswordReset($user));
-            }
-        );
+        if (!$record) {
+            return back()->withInput($request->only('email'))
+                        ->withErrors(['email' => 'Kode OTP reset sandi tidak valid atau telah kedaluwarsa.']);
+        }
 
-        // If the password was successfully reset, we will redirect the user back to
-        // the application's home authenticated view. If there is an error we can
-        // redirect them back to where they came from with their error message.
-        return $status == Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                            ->withErrors(['email' => __($status)]);
+        // Cek kedaluwarsa (15 menit)
+        if (\Carbon\Carbon::parse($record->created_at)->addMinutes(15)->isPast()) {
+            return back()->withInput($request->only('email'))
+                        ->withErrors(['email' => 'Kode OTP reset sandi telah kedaluwarsa. Silakan lakukan proses dari awal.']);
+        }
+
+        // Dapatkan user dan perbarui kata sandi
+        $user = \App\Models\User::where('email', $request->email)->first();
+        if ($user) {
+            $user->forceFill([
+                'password' => Hash::make($request->password),
+                'remember_token' => Str::random(60),
+            ])->save();
+
+            event(new PasswordReset($user));
+
+            // Hapus token yang sudah terpakai
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+            // Bersihkan data session OTP
+            session()->forget(['reset_email', 'demo_otp', 'otp_verified']);
+
+            return redirect()->route('login')->with('status', 'Kata sandi Anda berhasil diperbarui! Silakan masuk kembali.');
+        }
+
+        return back()->withInput($request->only('email'))
+                    ->withErrors(['email' => 'Gagal mengubah kata sandi. Pengguna tidak ditemukan.']);
     }
 }

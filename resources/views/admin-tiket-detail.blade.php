@@ -1,27 +1,21 @@
 <x-app-layout>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap');
-
         .font-tegas {
             font-family: 'Poppins', sans-serif;
         }
-
         body {
             font-family: 'Inter', sans-serif;
         }
-
         .bg-grid-pattern {
             background-image: linear-gradient(to right, #f1f5f9 1px, transparent 1px), linear-gradient(to bottom, #f1f5f9 1px, transparent 1px);
             background-size: 3rem 3rem;
         }
     </style>
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-    <div class="relative min-h-screen bg-[#f8fafc] pb-16">
+    <div class="relative min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-80px)] bg-[#f8fafc] pb-16">
         <div class="fixed inset-0 z-0 bg-grid-pattern pointer-events-none"></div>
         <div class="fixed top-0 right-0 w-[600px] h-[600px] bg-red-400/5 rounded-full blur-[120px] z-0 pointer-events-none"></div>
-
         <div class="relative z-10 pt-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
@@ -34,7 +28,6 @@
                         Kembali ke Dasbor
                     </a>
                 </div>
-
                 {{-- ================= HEADER JUDUL ================= --}}
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
                     <div class="flex items-center gap-4">
@@ -49,7 +42,6 @@
                         </div>
                     </div>
                 </div>
-
                 {{-- ================= NOTIFIKASI SUKSES ================= --}}
                 @if (session('success'))
                     <div class="mb-8 bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-4 shadow-sm animate-fade-in">
@@ -63,7 +55,6 @@
                         </div>
                     </div>
                 @endif
-
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
                     {{-- ================= KONTEN KIRI (DETAIL & FOTO) ================= --}}
@@ -84,7 +75,6 @@
                                     {{ $tiket->status == 'menunggu verifikasi' ? 'Menunggu Verifikasi' : ($tiket->status == 'diproses' ? 'Dalam Proses' : 'Selesai Diperbaiki') }}
                                 </span>
                             </div>
-
                             <div class="space-y-6">
                                 <div>
                                     <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 font-tegas">Deskripsi Kronologi Gangguan</p>
@@ -92,7 +82,6 @@
                                         {{ $tiket->deskripsi }}
                                     </div>
                                 </div>
-
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4 border-t border-slate-50">
                                     <div>
                                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 font-tegas">Dilaporkan Pada</p>
@@ -111,7 +100,6 @@
                                 </div>
                             </div>
                         </div>
-
                         {{-- KARTU INFORMASI PELANGGAN --}}
                         <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]">
                             <h4 class="text-sm font-bold text-[#111c2a] mb-6 font-tegas flex items-center gap-2.5 border-b border-slate-50 pb-4">
@@ -120,7 +108,6 @@
                                 </svg>
                                 Informasi Pelanggan
                             </h4>
-
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
                                 <div>
                                     <p class="text-[11px] font-bold text-slate-400 uppercase mb-1 font-tegas">Nama Lengkap</p>
@@ -140,9 +127,13 @@
                                 </div>
                             </div>
                         </div>
-
                         {{-- BUKTI FOTO PENANGANAN TEKNISI --}}
                         @if ($tiket->foto_bukti)
+                            @php
+                                $imageUrl = str_contains($tiket->foto_bukti, 'bukti_selesai/') 
+                                    ? asset('storage/' . $tiket->foto_bukti) 
+                                    : asset('storage/bukti_selesai/' . $tiket->foto_bukti);
+                            @endphp
                             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] animate-fade-in">
                                 <h4 class="text-sm font-bold text-[#111c2a] mb-6 font-tegas flex items-center gap-2.5 border-b border-slate-50 pb-4">
                                     <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,9 +144,9 @@
                                 </h4>
                                 
                                 <div class="relative rounded-2xl overflow-hidden border border-slate-200 bg-slate-50 shadow-inner group p-2 flex justify-center mb-4">
-                                    <img src="{{ asset('storage/bukti_selesai/' . $tiket->foto_bukti) }}" alt="Foto Bukti Teknisi" class="max-w-full h-auto object-contain max-h-[450px] rounded-xl transition-transform duration-500 group-hover:scale-[1.01]">
+                                    <img src="{{ $imageUrl }}" alt="Foto Bukti Teknisi" class="max-w-full h-auto object-contain max-h-[450px] rounded-xl transition-transform duration-500 group-hover:scale-[1.01]">
                                     
-                                    <a href="{{ asset('storage/bukti_selesai/' . $tiket->foto_bukti) }}" target="_blank" class="absolute top-4 right-4 bg-black/60 text-white p-2.5 rounded-xl backdrop-blur-sm hover:bg-[#dc2626] shadow-sm transition-all duration-300">
+                                    <a href="{{ $imageUrl }}" target="_blank" class="absolute top-4 right-4 bg-black/60 text-white p-2.5 rounded-xl backdrop-blur-sm hover:bg-[#dc2626] shadow-sm transition-all duration-300">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
                                         </svg>
@@ -164,34 +155,28 @@
                                 
                                 {{-- KETERANGAN GEOTAGGING LOKASI TEKNISI --}}
                                 <div class="bg-slate-50 border border-slate-200 p-4 sm:p-5 rounded-2xl w-full">
-                                    <div class="mb-4">
+                                    <div class="mb-2">
                                         <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider font-tegas">Lokasi Pengiriman Foto (Teknisi)</p>
-                                        @if(!$tiket->latitude_teknisi || !$tiket->longitude_teknisi)
-                                            <p class="text-sm font-medium text-slate-400 mt-0.5 italic">Koordinat upload tidak terekam</p>
-                                        @endif
                                     </div>
-
-                                    {{-- Bagian Peta (Embed Google Maps) --}}
-                                    @if($tiket->latitude_teknisi && $tiket->longitude_teknisi)
-                                        <div class="w-full h-56 sm:h-72 rounded-xl overflow-hidden border border-slate-200/80 shadow-inner bg-slate-100">
-                                            <iframe 
-                                                width="100%" 
-                                                height="100%" 
-                                                frameborder="0" 
-                                                style="border:0;" 
-                                                scrolling="no"
-                                                src="https://maps.google.com/maps?q={{ $tiket->latitude_teknisi }},{{ $tiket->longitude_teknisi }}&t=&z=16&ie=UTF8&iwloc=&output=embed">
-                                            </iframe>
+                                        @if($tiket->latitude_teknisi && $tiket->longitude_teknisi)
+                                        <div class="flex items-center">
+                                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 text-xs font-mono font-bold rounded-lg border border-slate-200 shadow-sm">
+                                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                {{ $tiket->latitude_teknisi }}, {{ $tiket->longitude_teknisi }}
+                                            </span>
                                         </div>
+                                    @else
+                                        <p class="text-sm font-medium text-slate-400 italic">Koordinat upload tidak terekam</p>
                                     @endif
                                 </div>
                                 
                                 <p class="text-xs text-slate-400 mt-4 text-center font-medium">Dokumentasi diunggah oleh teknisi pada saat status laporan diselesaikan.</p>
                             </div>
                         @endif
-
                     </div>
-
                     {{-- ================= KONTEN KANAN (MAPS & KENDALI) ================= --}}
                     <div class="space-y-8">
                         
@@ -204,16 +189,13 @@
                                 </svg>
                                 Titik Koordinat Pelanggan
                             </p>
-
                             <div class="relative rounded-2xl overflow-hidden shadow-inner bg-slate-100 z-0 border border-slate-200">
                                 <div id="map" class="h-48 w-full"></div>
                             </div>
-
                             <div class="mt-4 flex items-center justify-center gap-2 text-xs font-mono font-bold text-slate-600 bg-slate-50 py-2.5 rounded-xl border border-slate-100">
                                 <span>{{ $tiket->latitude }}, {{ $tiket->longitude }}</span>
                             </div>
                         </div>
-
                         {{-- PANEL KENDALI DISTRIBUSI TUGAS --}}
                         <div class="bg-white p-6 sm:p-8 border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] rounded-3xl">
                             <h4 class="text-sm font-bold text-[#111c2a] mb-6 font-tegas flex items-center gap-2.5 border-b border-slate-50 pb-4">
@@ -223,12 +205,10 @@
                                 </svg>
                                 Kendali Distribusi Tugas (Dispatching)
                             </h4>
-
                             @if($tiket->status !== 'selesai')
                                 <form action="{{ route('admin.pengaduan.updateStatus', $tiket->id) }}" method="POST" class="space-y-5">
                                     @csrf
                                     @method('PATCH')
-
                                     <div class="mb-4">
                                         <label class="block text-sm font-bold text-gray-700">Tugaskan Teknisi (Wilayah: {{ $tiket->pelanggan?->kecamatan ?? 'Tidak Diketahui' }})</label>
                                         
@@ -237,7 +217,6 @@
                                                 <span>Sistem Terkunci: Saat ini di luar jam kerja operasional (07:00 - 17:00).</span>
                                             </div>
                                         @endif
-
                                         <select name="teknisi_id" class="block w-full rounded-xl border-slate-200 py-3 px-4 text-sm bg-white focus:border-[#111c2a] focus:ring-[#111c2a] transition-all duration-300">
                                             <option value="">-- Belum Ditugaskan --</option>
                                             @if(isset($teknisiTersedia) && count($teknisiTersedia) > 0)
@@ -257,12 +236,11 @@
                                                         @endif
                                                     </option>
                                                 @empty
-                                                    <option value="" disabled class="text-red-500 bg-red-50">❌ Tidak ada teknisi yang tersedia saat ini</option>
+                                                    <option value="" disabled class="text-red-500 bg-red-50">âŒ Tidak ada teknisi yang tersedia saat ini</option>
                                                 @endforelse
                                             @endif
                                         </select>
                                     </div>
-
                                     <div>
                                         <label class="block text-xs font-bold text-slate-500 uppercase mb-2 font-tegas">Update Status Berkas</label>
                                         <select name="status" class="block w-full rounded-xl border-slate-200 py-3 px-4 text-sm bg-white focus:border-[#111c2a] focus:ring-[#111c2a] transition-all duration-300">
@@ -271,7 +249,6 @@
                                             <option value="selesai" {{ $tiket->status == 'selesai' ? 'selected' : '' }}>Selesai Diperbaiki</option>
                                         </select>
                                     </div>
-
                                     <button type="submit" onclick="return confirm('Simpan perubahan data pendelegasian ini?');" class="w-full bg-[#111c2a] text-white rounded-full py-3.5 mt-4 text-xs font-bold uppercase tracking-wider hover:bg-slate-800 hover:shadow-lg focus:ring-4 focus:ring-slate-200 transition-all duration-300 font-tegas">
                                         Simpan Perubahan Berkas
                                     </button>
@@ -291,18 +268,15 @@
                             @endif
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-
     {{-- ================= LEAFLET MAPS JAVASCRIPT ================= --}}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         var lat = {{ $tiket->latitude ?? -8.1331 }};
         var lng = {{ $tiket->longitude ?? 113.2223 }};
-
         var map = L.map('map', {
             zoomControl: false
         }).setView([lat, lng], 16);
@@ -310,11 +284,9 @@
         L.control.zoom({
             position: 'topright'
         }).addTo(map);
-
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap'
         }).addTo(map);
-
         var marker = L.marker([lat, lng]).addTo(map)
             .bindPopup("<div class='text-center'><b class='font-tegas text-sm'>Lokasi Titik</b><br><span class='text-xs text-slate-600'>{{ $tiket->pelanggan?->name ?? 'Pelanggan' }}</span></div>")
             .openPopup();

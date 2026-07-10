@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
 
@@ -40,7 +40,7 @@
     </style>
 
     {{-- ================= HEADER BAR ================= --}}
-    <div class="relative min-h-screen bg-white bg-gradient-to-b from-white via-white to-slate-100/50 pb-16">
+    <div class="relative min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-80px)] bg-white bg-gradient-to-b from-white via-white to-slate-100/50 pb-16">
         <div class="fixed inset-0 z-0 bg-grid-pattern opacity-50"></div>
         <div class="fixed top-[-5%] right-[-5%] w-[600px] h-[600px] bg-red-50/30 rounded-full blur-[130px] z-0 pointer-events-none"></div>
 
@@ -149,7 +149,7 @@
                             <p class="text-[11px] text-gray-500 mt-0.5">
                                 Status Anda saat ini ditentukan oleh Admin: 
                                 <span class="font-bold {{ auth()->user()->status === 'libur' ? 'text-red-600' : 'text-emerald-600' }}">
-                                    {{ auth()->user()->status === 'libur' ? '🔴 Sedang Libur / Off Shift' : '🟢 Masuk Kerja / Siaga (Standby)' }}
+                                    {{ auth()->user()->status === 'libur' ? 'ðŸ”´ Sedang Libur / Off Shift' : 'ðŸŸ¢ Masuk Kerja / Siaga (Standby)' }}
                                 </span>
                             </p>
                         </div>
@@ -218,7 +218,7 @@
                                                 class="block w-full text-xs text-black file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-900 file:text-white hover:file:bg-red-600 transition-all cursor-pointer">
                                                 
                                             <p class="text-[9px] text-gray-700 mt-3 font-medium bg-amber-50 p-2.5 rounded-lg border border-amber-200">
-                                                ⚠️ <b>Peringatan:</b> Lokasi GPS Anda saat ini akan dilampirkan otomatis dan dicocokkan dengan koordinat rumah pelanggan oleh sistem.
+                                                âš ï¸ <b>Peringatan:</b> Lokasi GPS Anda saat ini akan dilampirkan otomatis dan dicocokkan dengan koordinat rumah pelanggan oleh sistem.
                                             </p>
                                         </div>
 
@@ -237,7 +237,7 @@
                                         <div id="map_{{ $tiket->id }}" class="absolute inset-0 w-full h-full z-10"></div>
 
                                         <div id="gps-error_{{ $tiket->id }}" class="hidden absolute top-3 inset-x-3 z-50 bg-red-500/90 backdrop-blur-sm text-white text-[10px] p-2.5 rounded-xl text-center font-semibold tracking-wide shadow-md">
-                                            ⚠️ GPS Gagal terdeteksi. Pastikan izin lokasi browser Anda aktif.
+                                            âš ï¸ GPS Gagal terdeteksi. Pastikan izin lokasi browser Anda aktif.
                                         </div>
 
                                     </div>

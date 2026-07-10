@@ -42,6 +42,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Rute Notifikasi
+    Route::post('/notifications/{id}/read', function ($id) {
+        $notif = \App\Models\Notification::where('user_id', auth()->id())->findOrFail($id);
+        $notif->is_read = true;
+        $notif->save();
+        return back();
+    })->name('notifications.read');
+
+    Route::post('/notifications/read-all', function () {
+        \App\Models\Notification::where('user_id', auth()->id())->update(['is_read' => true]);
+        return back();
+    })->name('notifications.readAll');
+
+    Route::get('/notifications/poll', function () {
+        $lastId = request()->query('last_id', 0);
+        $newNotifs = \App\Models\Notification::where('user_id', auth()->id())
+            ->where('id', '>', $lastId)
+            ->get();
+        return response()->json($newNotifs);
+    })->name('notifications.poll');
 });
 
 require __DIR__ . '/auth.php';

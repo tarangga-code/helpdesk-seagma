@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lupa Sandi - Portal Helpdesk PT Seagma</title>
+    <title>Verifikasi OTP - Portal Helpdesk PT Seagma</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,16 +40,16 @@
             <div class="text-center mb-6">
                 <img class="mx-auto h-12 w-auto object-contain drop-shadow-sm mb-4" src="{{ asset('images/logo.png') }}" alt="Logo PT Seagma">
                 <h2 class="text-xl font-bold tracking-tight text-gray-900 font-tegas leading-tight">
-                    Lupa Kata Sandi?
+                    Verifikasi Kode OTP
                 </h2>
                 <p class="mt-2 text-xs text-gray-500 leading-relaxed font-light">
-                    Masukkan email terdaftar atau nomor HP akun Anda. Sistem akan mengirimkan kode verifikasi OTP 6-digit.
+                    Masukkan 6 digit kode OTP yang telah dikirimkan ke Gmail atau nomor HP terdaftar Anda.
                 </p>
             </div>
 
             <!-- Session Status -->
             @if (session('status'))
-                <div class="mb-5 bg-emerald-50 border border-emerald-200/60 rounded-xl p-4 shadow-sm text-xs font-medium text-emerald-800 leading-relaxed">
+                <div class="mb-5 bg-emerald-50 border border-emerald-200/60 rounded-xl p-3.5 shadow-sm text-xs font-medium text-emerald-800">
                     {{ session('status') }}
                 </div>
             @endif
@@ -61,28 +61,28 @@
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
                     </svg>
                     <div>
-                        {{ $errors->first('identity') }}
+                        {{ $errors->first('otp') }}
                     </div>
                 </div>
             @endif
 
-            <form class="space-y-5" method="POST" action="{{ route('password.email') }}">
+            <form class="space-y-5" method="POST" action="{{ route('password.otp.verify') }}">
                 @csrf
 
-                <!-- Identity Address -->
+                <!-- OTP Input -->
                 <div>
-                    <label for="identity" class="sr-only">Email / No HP</label>
-                    <input id="identity" name="identity" type="text" required value="{{ old('identity') }}" placeholder="Email atau Nomor HP Anda" autofocus
-                        class="block w-full rounded-xl border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-red-600 focus:bg-white bg-gray-50/50 sm:text-sm sm:leading-6 transition-all duration-300 outline-none">
+                    <label for="otp" class="sr-only">Kode OTP</label>
+                    <input id="otp" name="otp" type="text" maxlength="6" required placeholder="Masukkan 6 Digit OTP" autofocus autocomplete="off"
+                        class="block w-full text-center tracking-widest font-mono font-bold text-lg rounded-xl border-0 py-3.5 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 placeholder:font-sans placeholder:tracking-normal focus:ring-2 focus:ring-inset focus:ring-red-600 focus:bg-white bg-gray-50/50 transition-all duration-300 outline-none">
                 </div>
 
                 <div class="pt-2 flex flex-col gap-3">
                     <button type="submit" class="flex w-full justify-center rounded-xl bg-gray-900 px-4 py-3.5 text-sm font-bold tracking-wide text-white shadow-md hover:bg-red-600 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
-                        KIRIM KODE OTP
+                        VERIFIKASI OTP
                     </button>
 
-                    <a href="{{ route('login') }}" class="w-full text-center py-2.5 text-xs font-semibold text-gray-500 hover:text-gray-800 hover:underline transition-all duration-200">
-                        Kembali ke Halaman Masuk
+                    <a href="{{ route('password.request') }}" class="w-full text-center py-2.5 text-xs font-semibold text-gray-500 hover:text-gray-800 hover:underline transition-all duration-200">
+                        Kirim Ulang Kode OTP
                     </a>
                 </div>
             </form>

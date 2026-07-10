@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap');
@@ -16,7 +16,7 @@
         }
     </style>
 
-    <div class="min-h-screen bg-gradient-to-b from-white via-white to-slate-100 py-10">
+    <div class="min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-80px)] bg-gradient-to-b from-white via-white to-slate-100 py-10">
 
         <div class="max-w-7xl mx-auto px-4">
 
@@ -75,7 +75,7 @@
         <a href="{{ route('pimpinan.dashboard') }}"
             class="px-5 py-3 rounded-full bg-gray-900 text-white text-xs uppercase font-bold hover:bg-red-600 transition">
 
-            ← Kembali
+            â† Kembali
 
         </a>
 
@@ -216,7 +216,7 @@
                                         <div>
 
                                             <div class="text-5xl mb-3">
-                                                📂
+                                                ðŸ“‚
                                             </div>
 
                                             <h3 class="font-bold text-gray-700">
@@ -248,3 +248,4 @@
     </div>
 
 </x-app-layout>
+

@@ -44,7 +44,7 @@ class TiketController extends Controller
 
         $user = Auth::user();
 
-        Tiket::create([
+        $tiket = Tiket::create([
             'pelanggan_id' => $user->id,
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
@@ -55,6 +55,16 @@ class TiketController extends Controller
 
             'status' => 'menunggu verifikasi',
         ]);
+
+        // Buat notifikasi untuk semua admin
+        $admins = \App\Models\User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            \App\Models\Notification::create([
+                'user_id' => $admin->id,
+                'title' => 'Tiket Baru Masuk',
+                'message' => 'Tiket baru dari ' . $user->name . ': "' . $tiket->judul . '"',
+            ]);
+        }
 
         return redirect()
             ->route('pelanggan.dashboard')
@@ -84,6 +94,13 @@ class TiketController extends Controller
         // 4. Ubah status tiket menjadi selesai (sesuaikan penulisan status dengan sistemmu)
         $tiket->status = 'selesai'; 
         $tiket->save();
+
+        // Kirim notifikasi ke pelanggan
+        \App\Models\Notification::create([
+            'user_id' => $tiket->pelanggan_id,
+            'title' => 'Tiket Selesai Dikerjakan',
+            'message' => 'Status tiket Anda "' . $tiket->judul . '" telah diubah menjadi: Selesai.',
+        ]);
 
         // 5. Kembalikan teknisi ke halaman dashboard dengan pesan sukses
         return redirect()->back()->with('success', 'Tugas berhasil diselesaikan! Bukti foto sudah tersimpan untuk Admin.');

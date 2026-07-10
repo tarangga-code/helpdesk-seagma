@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap');
         
@@ -11,7 +11,7 @@
         }
     </style>
 
-    <div class="relative min-h-screen bg-slate-50 bg-grid-pattern pb-20 pt-8">
+    <div class="relative min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-80px)] bg-slate-50 bg-grid-pattern pb-20 pt-8">
         <div class="fixed top-0 left-1/3 w-[500px] h-[500px] bg-red-100/20 rounded-full blur-[140px] z-0 pointer-events-none"></div>
 
         <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap');
 
@@ -19,7 +19,7 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
-    <div class="relative min-h-screen pb-16">
+    <div class="relative min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-80px)] pb-16">
         <div class="fixed inset-0 z-0 bg-grid-pattern opacity-40"></div>
         <div class="fixed top-[-10%] right-[-10%] w-[600px] h-[600px] bg-red-100/40 rounded-full blur-[130px] z-0 pointer-events-none"></div>
 

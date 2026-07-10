@@ -1,3 +1,8 @@
+@php
+    $unreadNotifCount = \App\Models\Notification::where('user_id', auth()->id())->where('is_read', false)->count();
+    $recentNotifs = \App\Models\Notification::where('user_id', auth()->id())->latest()->take(5)->get();
+@endphp
+
 <nav class="bg-white/90 backdrop-blur-md border-b border-gray-100/50 sticky top-0 z-[999] transition-all duration-300 w-full">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16 sm:h-20">
@@ -12,8 +17,57 @@
                 </a>
             </div>
 
-            {{-- ================= MENU DESKTOP (Tetap Pakai Alpine) ================= --}}
+            {{-- ================= MENU DESKTOP ================= --}}
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                
+                {{-- Dropdown Notifikasi --}}
+                <div class="relative me-4" x-data="{ notifOpen: false }" @click.away="notifOpen = false">
+                    <button @click="notifOpen = !notifOpen" type="button" class="relative p-2 text-gray-500 hover:text-gray-950 focus:outline-none transition duration-150 flex items-center justify-center">
+                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        @if ($unreadNotifCount > 0)
+                            <span class="absolute top-1 right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-[9px] font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                                {{ $unreadNotifCount }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <div x-show="notifOpen" style="display: none;" class="absolute right-0 mt-2 w-80 rounded-2xl bg-white shadow-xl border border-gray-100 py-2 z-50 overflow-hidden">
+                        <div class="px-4 py-2 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
+                            <span class="text-[10px] font-bold text-gray-900 uppercase tracking-widest">Notifikasi</span>
+                            @if ($unreadNotifCount > 0)
+                                <form action="{{ route('notifications.readAll') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="text-[9px] font-bold text-red-600 hover:text-red-800 uppercase tracking-wider hover:underline">Tandai semua dibaca</button>
+                                </form>
+                            @endif
+                        </div>
+                        <div class="max-h-64 overflow-y-auto divide-y divide-gray-50">
+                            @forelse ($recentNotifs as $notif)
+                                <div class="px-4 py-3 hover:bg-gray-50 transition-colors duration-150 flex flex-col {{ !$notif->is_read ? 'bg-red-50/20' : '' }}">
+                                    <div class="flex justify-between items-start gap-1">
+                                        <span class="text-xs font-bold text-gray-800">{{ $notif->title }}</span>
+                                        @if (!$notif->is_read)
+                                            <form action="{{ route('notifications.read', $notif->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="text-[9px] text-gray-400 hover:text-red-600 font-bold uppercase hover:underline">Baca</button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                    <p class="text-[11px] text-gray-600 mt-1 leading-normal">{{ $notif->message }}</p>
+                                    <span class="text-[9px] text-gray-400 mt-1.5 font-mono">{{ $notif->created_at->diffForHumans() }}</span>
+                                </div>
+                            @empty
+                                <div class="px-4 py-6 text-center text-xs text-gray-500 italic">
+                                    Tidak ada notifikasi.
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Dropdown Profile --}}
                 <div class="relative" x-data="{ dropdownOpen: false }" @click.away="dropdownOpen = false">
                     <button @click="dropdownOpen = !dropdownOpen" type="button" class="inline-flex items-center px-4 py-2.5 border border-gray-100 rounded-xl text-xs font-semibold uppercase tracking-widest text-gray-600 bg-white/80 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 shadow-sm transition-all duration-300 outline-none min-h-[44px]">
                         <div class="flex items-center gap-2">
@@ -38,7 +92,7 @@
                 </div>
             </div>
 
-            {{-- ================= TOMBOL HAMBURGER MOBILE (Menggunakan Native Javascript onclick) ================= --}}
+            {{-- ================= TOMBOL HAMBURGER MOBILE ================= --}}
             <div class="-me-2 flex items-center sm:hidden">
                 <button type="button" 
                         onclick="document.getElementById('mobileMenu').classList.toggle('hidden'); document.getElementById('iconBurger').classList.toggle('hidden'); document.getElementById('iconClose').classList.toggle('hidden');" 
@@ -52,7 +106,7 @@
         </div>
     </div>
 
-    {{-- ================= MENU DROPDOWN MOBILE (Menggunakan ID dan Class 'hidden' bawaan Tailwind) ================= --}}
+    {{-- ================= MENU DROPDOWN MOBILE ================= --}}
     <div id="mobileMenu" class="hidden absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-2xl sm:hidden z-[999] max-h-[calc(100vh-4rem)] overflow-y-auto">
         <div class="px-5 py-6 space-y-5">
             {{-- Profil User di Mobile --}}
@@ -66,6 +120,40 @@
                 <div class="overflow-hidden">
                     <div class="text-sm font-bold text-gray-950 uppercase tracking-wide truncate">{{ Auth::user()->name }}</div>
                     <div class="text-[11px] text-gray-500 font-mono mt-0.5 truncate">{{ Auth::user()->email }}</div>
+                </div>
+            </div>
+
+            {{-- Notifikasi di Mobile --}}
+            <div class="pb-5 border-b border-gray-100 px-2">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Notifikasi ({{ $unreadNotifCount }})</span>
+                    @if ($unreadNotifCount > 0)
+                        <form action="{{ route('notifications.readAll') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-[9px] font-bold text-red-600 uppercase tracking-wider hover:underline">Tandai semua dibaca</button>
+                        </form>
+                    @endif
+                </div>
+                <div class="space-y-2.5 max-h-48 overflow-y-auto pr-1">
+                    @forelse ($recentNotifs as $notif)
+                        <div class="p-3.5 rounded-xl border border-gray-100 {{ !$notif->is_read ? 'bg-red-50/30 border-red-100/50' : 'bg-gray-50/50' }} flex flex-col relative">
+                            <div class="flex justify-between items-start gap-1">
+                                <span class="text-xs font-bold text-gray-900">{{ $notif->title }}</span>
+                                @if (!$notif->is_read)
+                                    <form action="{{ route('notifications.read', $notif->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="text-[9px] text-gray-400 hover:text-red-600 font-bold uppercase hover:underline">Baca</button>
+                                    </form>
+                                @endif
+                            </div>
+                            <p class="text-[11px] text-gray-600 mt-1 leading-normal">{{ $notif->message }}</p>
+                            <span class="text-[9px] text-gray-400 mt-1.5 font-mono">{{ $notif->created_at->diffForHumans() }}</span>
+                        </div>
+                    @empty
+                        <div class="text-center py-4 text-xs text-gray-500 italic">
+                            Tidak ada notifikasi.
+                        </div>
+                    @endforelse
                 </div>
             </div>
             
