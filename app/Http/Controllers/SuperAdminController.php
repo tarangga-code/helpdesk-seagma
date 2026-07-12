@@ -28,11 +28,36 @@ class SuperAdminController extends Controller
         // Buat query dasar untuk tiket
         $query = Tiket::with(['pelanggan', 'kategori'])->latest();
 
-        // Jika ada input pencarian nama pelanggan
+        // Jika ada input pencarian (nama pelanggan, status, atau tanggal)
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->whereHas('pelanggan', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
+            
+            // Coba parsing search string sebagai tanggal jika mengandung angka/pola tanggal
+            $searchDate = null;
+            if (preg_match('/[0-9]/', $search)) {
+                try {
+                    $searchDate = \Carbon\Carbon::parse($search)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    $searchDate = null;
+                }
+            }
+
+            $query->where(function($q) use ($search, $searchDate) {
+                // Cari berdasarkan nama pelanggan
+                $q->whereHas('pelanggan', function($pq) use ($search) {
+                    $pq->where('name', 'like', "%{$search}%");
+                })
+                // Atau berdasarkan status tiket
+                ->orWhere('status', 'like', "%{$search}%")
+                // Atau berdasarkan judul tiket
+                ->orWhere('judul', 'like', "%{$search}%");
+
+                // Atau berdasarkan tanggal laporan
+                if ($searchDate) {
+                    $q->orWhereDate('created_at', $searchDate);
+                } else {
+                    $q->orWhere('created_at', 'like', "%{$search}%");
+                }
             });
         }
 
@@ -40,6 +65,8 @@ class SuperAdminController extends Controller
         if ($request->filled('kategori')) {
             $query->where('kategori_id', $request->kategori);
         }
+
+
 
         // Eksekusi query
         $tikets = $query->get();

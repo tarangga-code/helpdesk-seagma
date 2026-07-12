@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap');
         
@@ -42,28 +42,28 @@
 
             <div class="bg-white rounded-[2rem] border border-gray-100/80 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
+                    <table class="w-full text-left border-collapse min-w-max">
                         <thead>
-                            <tr class="border-b border-gray-100 bg-slate-50/50">
-                                <th class="px-8 py-5 text-[11px] font-extrabold uppercase tracking-wider text-gray-400 font-tegas">Nama</th>
-                                <th class="px-8 py-5 text-[11px] font-extrabold uppercase tracking-wider text-gray-400 font-tegas">Email</th>
-                                <th class="px-8 py-5 text-[11px] font-extrabold uppercase tracking-wider text-gray-400 font-tegas text-center">Status</th>
-                                <th class="px-8 py-5 text-[11px] font-extrabold uppercase tracking-wider text-gray-400 font-tegas text-center">Aksi</th>
+                            <tr class="border-b-2 border-gray-100 bg-white">
+                                <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px]">Nama</th>
+                                <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px]">Email</th>
+                                <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px] text-center">Status</th>
+                                <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px] text-center">Aksi</th>
                             </tr>
                         </thead>
 
                         <tbody class="divide-y divide-gray-50">
                             @foreach ($teknisi as $user)
-                                <tr class="hover:bg-slate-50/30 transition-colors duration-150">
-                                    <td class="px-8 py-5 text-sm font-bold text-gray-900 tracking-tight">
+                                <tr class="border-b border-gray-50 hover:bg-[#f8f9fa] transition-colors group">
+                                    <td class="py-4 px-6 text-sm font-bold text-gray-900 tracking-tight">
                                         {{ $user->name }}
                                     </td>
 
-                                    <td class="px-8 py-5 text-sm font-medium text-gray-500">
+                                    <td class="py-4 px-6 text-sm font-medium text-gray-500">
                                         {{ $user->email }}
                                     </td>
 
-                                    <td class="px-8 py-5 text-center whitespace-nowrap">
+                                    <td class="py-4 px-6 text-center whitespace-nowrap">
                                         @if ($user->is_approved)
                                             <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#00b67a] text-white shadow-sm">
                                                 Sudah Valid
@@ -75,7 +75,7 @@
                                         @endif
                                     </td>
 
-                                    <td class="px-8 py-5 text-center whitespace-nowrap">
+                                    <td class="py-4 px-6 text-center whitespace-nowrap">
                                         @if (!$user->is_approved)
                                             <form action="{{ route('pimpinan.users.approve', $user->id) }}" method="POST" class="inline-block">
                                                 @csrf

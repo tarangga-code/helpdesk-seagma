@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@400;500;600;700;800&display=swap');
 
@@ -285,19 +285,19 @@
                 </div>
 
                 {{-- ================= TABEL BERKAS TIKET ================= --}}
-                <div class="bg-white rounded-[2rem] shadow-2xl shadow-gray-200/20 border border-gray-100 overflow-hidden relative z-10">
+                <div id="table-card" class="bg-white rounded-[2rem] shadow-2xl shadow-gray-200/20 border border-gray-100 overflow-hidden relative z-10">
 
-                    <div class="px-8 py-6 border-b border-gray-50 flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gray-50/20">
-                        <h3 class="text-sm font-bold uppercase tracking-wider text-gray-800 font-tegas whitespace-nowrap">
+                    <div class="px-8 py-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-gradient-to-r from-slate-800 to-slate-900 border-b border-slate-700">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-white font-tegas whitespace-nowrap">
                             Daftar Berkas Tiket Gangguan
                         </h3>
 
-                        <form method="GET" action="{{ route('pimpinan.dashboard') }}" class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                        <form method="GET" action="{{ route('pimpinan.dashboard') }}" class="flex flex-row items-center gap-3 w-full sm:w-auto justify-end">
 
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pelanggan..."
-                                class="w-full sm:w-48 text-xs border-gray-200 rounded-xl px-4 py-2 focus:ring-gray-900 focus:border-gray-900 shadow-sm">
+                             <input type="text" name="search" id="pimpinanSearchInput" autocomplete="off" value="{{ request('search') }}" placeholder="Cari..."
+                                class="w-1/2 sm:w-64 text-xs border-slate-300 rounded-xl px-4 py-2 focus:ring-red-500 focus:border-red-500 shadow-sm bg-white text-slate-800 font-medium outline-none">
 
-                            <select name="kategori" class="w-full sm:w-48 text-xs border-gray-200 rounded-xl px-4 py-2 focus:ring-gray-900 focus:border-gray-900 shadow-sm">
+                            <select name="kategori" id="pimpinanKategoriSelect" class="w-1/2 sm:w-48 text-xs border-slate-300 rounded-xl px-4 py-2 focus:ring-red-500 focus:border-red-500 shadow-sm bg-white text-slate-800 font-bold cursor-pointer outline-none">
                                 <option value="">Semua Kategori</option>
                                 @foreach($kategoris as $kat)
                                     <option value="{{ $kat->id }}" {{ request('kategori') == $kat->id ? 'selected' : '' }}>
@@ -306,68 +306,77 @@
                                 @endforeach
                             </select>
 
-                            <div class="flex gap-2">
-                                <button type="submit" class="bg-gray-900 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-red-600 transition shadow-md">
-                                    Cari
-                                </button>
-                                @if(request('search') || request('kategori'))
-                                    <a href="{{ route('pimpinan.dashboard') }}" class="bg-white border border-gray-200 text-gray-600 px-5 py-2 rounded-xl text-xs font-bold hover:bg-gray-50 transition shadow-sm flex items-center justify-center">
-                                        Reset
-                                    </a>
-                                @endif
+                            <div class="flex-none">
+                                <a href="{{ route('pimpinan.dashboard') }}" id="pimpinanResetBtn" 
+                                   class="{{ (request('search') || request('kategori')) ? '' : 'hidden' }} bg-white border border-slate-300 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-50 transition shadow-sm flex items-center justify-center cursor-pointer">
+                                    Reset
+                                </a>
                             </div>
                         </form>
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
+                        <table class="w-full text-left border-collapse min-w-max">
                             <thead>
-                                <tr class="text-[10px] text-gray-400 uppercase tracking-[0.15em] bg-gray-50/50 border-b border-gray-50">
-                                    <th class="px-8 py-4 font-bold">Pelanggan</th>
-                                    <th class="px-8 py-4 font-bold">Kategori Gangguan</th>
-                                    <th class="px-8 py-4 font-bold">Tanggal Laporan</th>
-                                    <th class="px-8 py-4 font-bold text-center">Status</th>
+                                <tr class="border-b-2 border-gray-100 bg-white">
+                                    <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px]">Pelanggan</th>
+                                    <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px]">Kategori Gangguan</th>
+                                    <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px]">Tanggal Laporan</th>
+                                    <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px] text-center">Status</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-50">
                                 @forelse ($tikets as $tiket)
-                                    <tr class="group hover:bg-gray-50/40 transition-all duration-200">
-                                        <td class="px-8 py-4">
-                                            <p class="text-sm font-bold text-gray-900 uppercase tracking-wide font-tegas">
-                                                {{ $tiket->pelanggan->name ?? 'Anonim' }}
-                                            </p>
-                                            <p class="text-[10px] text-gray-500 font-mono mt-0.5">
-                                                {{ $tiket->pelanggan->email ?? '-' }}
-                                            </p>
+                                    <tr class="border-b border-gray-50 hover:bg-[#f8f9fa] transition-colors group">
+                                        <td class="py-4 px-6">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white text-sm font-bold uppercase shrink-0">
+                                                    {{ Str::substr($tiket->pelanggan->name ?? 'A', 0, 1) }}
+                                                </div>
+                                                <div>
+                                                    <p class="text-sm font-bold text-gray-900 uppercase tracking-wide font-tegas leading-none">
+                                                        {{ $tiket->pelanggan->name ?? 'Anonim' }}
+                                                    </p>
+                                                    <p class="text-[10px] text-gray-500 font-mono mt-1 leading-none">
+                                                        {{ $tiket->pelanggan->email ?? '-' }}
+                                                    </p>
+                                                </div>
+                                            </div>
                                         </td>
 
-                                        <td class="px-8 py-4">
+                                        <td class="py-4 px-6">
                                             <p class="text-xs font-semibold text-gray-700">
                                                 {{ $tiket->kategori->nama_kategori ?? 'Gangguan Jaringan' }}
                                             </p>
                                         </td>
 
-                                        <td class="px-8 py-4 text-xs font-mono text-gray-500 font-medium">
+                                        <td class="py-4 px-6 text-xs font-mono text-gray-500 font-medium">
                                             {{ $tiket->created_at->format('d M Y, H:i') }}
                                         </td>
 
-                                        <td class="px-8 py-4 text-center">
+                                        <td class="py-4 px-6 text-center">
                                             @php
                                                 $normalizedStatus = ucwords(strtolower(trim($tiket->status)));
                                             @endphp
                                             
-                                            <span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ring-1 inline-block
-                                                @if (in_array($normalizedStatus, ['Open', 'Pending', 'Menunggu', 'Menunggu Verifikasi'])) bg-red-50 text-red-600 ring-red-100
-                                                @elseif(in_array($normalizedStatus, ['In Progress', 'Proses', 'Diproses', 'Dalam Proses'])) bg-gray-100 text-gray-600 ring-gray-200
-                                                @elseif(in_array($normalizedStatus, ['Resolved', 'Selesai', 'Selesai Diperbaiki'])) bg-emerald-50 text-emerald-600 ring-emerald-100
-                                                @else bg-gray-50 text-gray-600 ring-gray-100 @endif">
+                                            <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider shadow-sm
+                                                @if (in_array($normalizedStatus, ['Open', 'Pending', 'Menunggu', 'Menunggu Verifikasi'])) bg-red-50 text-red-600 border border-red-100
+                                                @elseif(in_array($normalizedStatus, ['In Progress', 'Proses', 'Diproses', 'Dalam Proses'])) bg-slate-100 text-slate-600 border border-slate-200
+                                                @elseif(in_array($normalizedStatus, ['Resolved', 'Selesai', 'Selesai Diperbaiki'])) bg-emerald-50 text-emerald-600 border border-emerald-100
+                                                @else bg-gray-50 text-gray-600 border border-gray-200 @endif">
+                                                
+                                                <span class="w-1.5 h-1.5 rounded-full mr-1.5 animate-pulse
+                                                    @if (in_array($normalizedStatus, ['Open', 'Pending', 'Menunggu', 'Menunggu Verifikasi'])) bg-red-500
+                                                    @elseif(in_array($normalizedStatus, ['In Progress', 'Proses', 'Diproses', 'Dalam Proses'])) bg-slate-500
+                                                    @elseif(in_array($normalizedStatus, ['Resolved', 'Selesai', 'Selesai Diperbaiki'])) bg-emerald-500
+                                                    @else bg-gray-400 @endif"></span>
                                                 {{ $tiket->status }}
                                             </span>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-8 py-10 text-center text-gray-400 text-xs font-medium uppercase tracking-wider">
+                                        <td colspan="4" class="py-10 px-6 text-center text-gray-400 text-xs font-medium uppercase tracking-wider">
                                             Belum ada berkas tiket yang ditemukan.
                                         </td>
                                     </tr>
@@ -386,4 +395,118 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableCard = document.getElementById('table-card');
+            const searchInput = document.getElementById('pimpinanSearchInput');
+            const kategoriSelect = document.getElementById('pimpinanKategoriSelect');
+            const resetBtn = document.getElementById('pimpinanResetBtn');
+            const form = searchInput ? searchInput.closest('form') : null;
+
+            if (!tableCard || !searchInput || !kategoriSelect || !form) return;
+
+            let delayTimer;
+
+            // Mencegah submit form bawaan browser agar tidak reload
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                fetchResults();
+            });
+
+            // Input pencarian dengan debounce 300ms (sangat responsif & halus)
+            searchInput.addEventListener('input', function() {
+                clearTimeout(delayTimer);
+                delayTimer = setTimeout(function() {
+                    fetchResults();
+                }, 300);
+            });
+
+            // Dropdown kategori diubah langsung melakukan fetch
+            kategoriSelect.addEventListener('change', function() {
+                fetchResults();
+            });
+
+            // Intersept klik tombol Reset secara AJAX
+            resetBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                searchInput.value = '';
+                kategoriSelect.value = '';
+                fetchResults();
+            });
+
+            // Intersept klik link pagination secara AJAX
+            tableCard.addEventListener('click', function(e) {
+                const link = e.target.closest('a');
+                // Pastikan link valid dan bukan tombol reset
+                if (link && link !== resetBtn && link.href) {
+                    e.preventDefault();
+                    fetchResults(link.href);
+                }
+            });
+
+            // Fungsi utama AJAX Fetching untuk reload tabel & pagination saja
+            function fetchResults(targetUrl = null) {
+                let url;
+                if (targetUrl) {
+                    url = new URL(targetUrl);
+                } else {
+                    url = new URL(form.action);
+                    const params = new URLSearchParams(new FormData(form));
+                    url.search = params.toString();
+                }
+
+                // Tambahkan efek loading (transisi opacity halus)
+                const tbody = tableCard.querySelector('tbody');
+                const linksContainer = tableCard.querySelector('.border-t');
+                if (tbody) tbody.style.opacity = '0.4';
+                if (linksContainer) linksContainer.style.opacity = '0.4';
+
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        
+                        const newTableCard = doc.getElementById('table-card');
+                        if (newTableCard) {
+                            // Ganti isi dari table saja agar input search tetap fokus & kursor tidak lari
+                            const currentTable = tableCard.querySelector('table');
+                            const newTable = newTableCard.querySelector('table');
+                            if (currentTable && newTable) {
+                                currentTable.outerHTML = newTable.outerHTML;
+                            }
+
+                            // Ganti/update link pagination
+                            const currentPagination = tableCard.querySelector('.border-t');
+                            const newPagination = newTableCard.querySelector('.border-t');
+                            if (currentPagination && newPagination) {
+                                currentPagination.outerHTML = newPagination.outerHTML;
+                            } else if (currentPagination && !newPagination) {
+                                currentPagination.remove();
+                            } else if (!currentPagination && newPagination) {
+                                tableCard.appendChild(newPagination);
+                            }
+                        }
+
+                        // Toggle tombol reset secara dinamis
+                        if (searchInput.value !== '' || kategoriSelect.value !== '') {
+                            resetBtn.classList.remove('hidden');
+                        } else {
+                            resetBtn.classList.add('hidden');
+                        }
+
+                        // Update history URL di browser tanpa reload
+                        window.history.pushState({}, '', url.toString());
+
+                        if (tbody) tbody.style.opacity = '1';
+                        if (linksContainer) linksContainer.style.opacity = '1';
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        if (tbody) tbody.style.opacity = '1';
+                        if (linksContainer) linksContainer.style.opacity = '1';
+                    });
+            }
+        });
+    </script>
 </x-app-layout>

@@ -17,12 +17,12 @@
                 </a>
             </div>
 
-            {{-- ================= MENU DESKTOP ================= --}}
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            {{-- ================= MENU NAVIGASI KANAN (DESKTOP & MOBILE) ================= --}}
+            <div class="flex items-center gap-2 sm:gap-4 sm:ms-6">
                 
-                {{-- Dropdown Notifikasi --}}
-                <div class="relative me-4" x-data="{ notifOpen: false }" @click.away="notifOpen = false">
-                    <button @click="notifOpen = !notifOpen" type="button" class="relative p-2 text-gray-500 hover:text-gray-950 focus:outline-none transition duration-150 flex items-center justify-center">
+                {{-- Dropdown Notifikasi (Terlihat langsung baik di PC maupun HP) --}}
+                <div class="relative" x-data="{ notifOpen: false }" @click.away="notifOpen = false">
+                    <button @click="notifOpen = !notifOpen" type="button" class="relative p-2 text-gray-500 hover:text-gray-950 focus:outline-none transition duration-150 flex items-center justify-center min-h-[40px] min-w-[40px] rounded-xl hover:bg-gray-50">
                         <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
@@ -33,7 +33,7 @@
                         @endif
                     </button>
 
-                    <div x-show="notifOpen" style="display: none;" class="absolute right-0 mt-2 w-80 rounded-2xl bg-white shadow-xl border border-gray-100 py-2 z-50 overflow-hidden">
+                    <div x-show="notifOpen" style="display: none;" class="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 rounded-2xl bg-white shadow-xl border border-gray-100 py-2 z-50 overflow-hidden">
                         <div class="px-4 py-2 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
                             <span class="text-[10px] font-bold text-gray-900 uppercase tracking-widest">Notifikasi</span>
                             @if ($unreadNotifCount > 0)
@@ -67,41 +67,43 @@
                     </div>
                 </div>
 
-                {{-- Dropdown Profile --}}
-                <div class="relative" x-data="{ dropdownOpen: false }" @click.away="dropdownOpen = false">
-                    <button @click="dropdownOpen = !dropdownOpen" type="button" class="inline-flex items-center px-4 py-2.5 border border-gray-100 rounded-xl text-xs font-semibold uppercase tracking-widest text-gray-600 bg-white/80 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 shadow-sm transition-all duration-300 outline-none min-h-[44px]">
-                        <div class="flex items-center gap-2">
-                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block animate-pulse"></span>
-                            <span>{{ Auth::user()->name }}</span>
-                        </div>
-                        <div class="ms-2">
-                            <svg class="fill-current h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                    </button>
+                {{-- Dropdown Profile (Hanya Tampil di Desktop) --}}
+                <div class="hidden sm:block">
+                    <div class="relative" x-data="{ dropdownOpen: false }" @click.away="dropdownOpen = false">
+                        <button @click="dropdownOpen = !dropdownOpen" type="button" class="inline-flex items-center px-4 py-2.5 border border-gray-100 rounded-xl text-xs font-semibold uppercase tracking-widest text-gray-600 bg-white/80 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 shadow-sm transition-all duration-300 outline-none min-h-[44px]">
+                            <div class="flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block animate-pulse"></span>
+                                <span>{{ Auth::user()->name }}</span>
+                            </div>
+                            <div class="ms-2">
+                                <svg class="fill-current h-4 w-4 text-gray-400 group-hover:text-gray-600 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </button>
 
-                    <div x-show="dropdownOpen" style="display: none;" class="absolute right-0 mt-2 w-48 rounded-2xl bg-white shadow-xl border border-gray-100 py-2 z-50">
-                        <div class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Manajemen Sesi</div>
-                        <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors">Pengaturan Profil</a>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="block px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors">Keluar Sistem</a>
-                        </form>
+                        <div x-show="dropdownOpen" style="display: none;" class="absolute right-0 mt-2 w-48 rounded-2xl bg-white shadow-xl border border-gray-100 py-2 z-50">
+                            <div class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Manajemen Sesi</div>
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors">Pengaturan Profil</a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="block px-4 py-2.5 text-xs font-bold text-red-600 hover:bg-red-50 transition-colors">Keluar Sistem</a>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {{-- ================= TOMBOL HAMBURGER MOBILE ================= --}}
-            <div class="-me-2 flex items-center sm:hidden">
-                <button type="button" 
-                        onclick="document.getElementById('mobileMenu').classList.toggle('hidden'); document.getElementById('iconBurger').classList.toggle('hidden'); document.getElementById('iconClose').classList.toggle('hidden');" 
-                        class="inline-flex items-center justify-center p-2.5 rounded-xl text-gray-500 hover:text-gray-900 bg-gray-50 border border-gray-200 min-h-[44px] min-w-[44px]">
-                    <svg class="h-5 w-5" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path id="iconBurger" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path id="iconClose" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                {{-- Hamburger Menu (Hanya Tampil di HP) --}}
+                <div class="flex items-center sm:hidden">
+                    <button type="button" 
+                            onclick="document.getElementById('mobileMenu').classList.toggle('hidden'); document.getElementById('iconBurger').classList.toggle('hidden'); document.getElementById('iconClose').classList.toggle('hidden');" 
+                            class="inline-flex items-center justify-center p-2.5 rounded-xl text-gray-500 hover:text-gray-900 bg-gray-50 border border-gray-200 min-h-[44px] min-w-[44px]">
+                        <svg class="h-5 w-5" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path id="iconBurger" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            <path id="iconClose" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -123,39 +125,7 @@
                 </div>
             </div>
 
-            {{-- Notifikasi di Mobile --}}
-            <div class="pb-5 border-b border-gray-100 px-2">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Notifikasi ({{ $unreadNotifCount }})</span>
-                    @if ($unreadNotifCount > 0)
-                        <form action="{{ route('notifications.readAll') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="text-[9px] font-bold text-red-600 uppercase tracking-wider hover:underline">Tandai semua dibaca</button>
-                        </form>
-                    @endif
-                </div>
-                <div class="space-y-2.5 max-h-48 overflow-y-auto pr-1">
-                    @forelse ($recentNotifs as $notif)
-                        <div class="p-3.5 rounded-xl border border-gray-100 {{ !$notif->is_read ? 'bg-red-50/30 border-red-100/50' : 'bg-gray-50/50' }} flex flex-col relative">
-                            <div class="flex justify-between items-start gap-1">
-                                <span class="text-xs font-bold text-gray-900">{{ $notif->title }}</span>
-                                @if (!$notif->is_read)
-                                    <form action="{{ route('notifications.read', $notif->id) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="text-[9px] text-gray-400 hover:text-red-600 font-bold uppercase hover:underline">Baca</button>
-                                    </form>
-                                @endif
-                            </div>
-                            <p class="text-[11px] text-gray-600 mt-1 leading-normal">{{ $notif->message }}</p>
-                            <span class="text-[9px] text-gray-400 mt-1.5 font-mono">{{ $notif->created_at->diffForHumans() }}</span>
-                        </div>
-                    @empty
-                        <div class="text-center py-4 text-xs text-gray-500 italic">
-                            Tidak ada notifikasi.
-                        </div>
-                    @endforelse
-                </div>
-            </div>
+
             
             {{-- Link Navigasi Mobile --}}
             <div class="space-y-2.5">

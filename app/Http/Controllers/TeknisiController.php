@@ -51,7 +51,8 @@ class TeknisiController extends Controller
         // Proses upload foto bukti ke dalam storage
         if ($request->hasFile('foto_bukti')) {
             $file = $request->file('foto_bukti');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            // Menghasilkan nama file yang unik dan ringkas (aman dari batas panjang karakter database)
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $file->storeAs('public/bukti_selesai', $filename);
             
             $tiket->foto_bukti = $filename;

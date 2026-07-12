@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap');
 
@@ -69,14 +69,13 @@
                     </div>
 
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left">
+                        <table class="w-full text-left border-collapse min-w-max">
                             <thead>
-                                <tr
-                                    class="text-[10px] text-black uppercase tracking-[0.15em] bg-gray-50/30 border-b border-gray-50">
-                                    <th class="px-8 py-4 font-bold">Rincian Keluhan &amp; Waktu</th>
-                                    <th class="px-8 py-4 font-bold">Pelanggan</th>
-                                    <th class="px-8 py-4 font-bold">Status Berkas</th>
-                                    <th class="px-8 py-4 font-bold text-center w-64 bg-gray-50/10">Teknisi Yang Bertugas</th>
+                                <tr class="border-b-2 border-gray-100 bg-white">
+                                    <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px]">Rincian Keluhan &amp; Waktu</th>
+                                    <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px]">Pelanggan</th>
+                                    <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px]">Status Berkas</th>
+                                    <th class="py-5 px-6 font-extrabold text-gray-400 uppercase tracking-wider text-[11px] text-center">Teknisi Yang Bertugas</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-50 text-sm text-gray-700">
@@ -88,57 +87,63 @@
                                         $teknisiAssign = $users->where('id', $tiket->teknisi_id)->first();
                                         $namaTeknisi = $teknisiAssign ? $teknisiAssign->name : 'Belum Ada';
                                     @endphp
-                                    <tr class="group hover:bg-gray-50/40 transition-all duration-200">
-                                        <td class="px-8 py-5">
-                                            <div class="text-[10px] font-mono font-medium text-black mb-1">
-                                                {{ \Carbon\Carbon::parse($tiket->created_at)->format('d F Y, H:i') }}
-                                                WIB
+                                    <tr class="border-b border-gray-50 hover:bg-[#f8f9fa] transition-colors group">
+                                        <td class="py-4 px-6">
+                                            <div class="text-[10px] font-mono font-semibold text-gray-400 mb-1">
+                                                {{ \Carbon\Carbon::parse($tiket->created_at)->format('d F Y, H:i') }} WIB
                                             </div>
-                                            <div
-                                                class="font-bold text-gray-900 uppercase tracking-wide text-xs font-tegas">
+                                            <div class="font-bold text-gray-900 uppercase tracking-wide text-xs font-tegas">
                                                 {{ $tiket->judul }}
                                             </div>
-                                            <div class="text-xs text-black font-light mt-1 max-w-md line-clamp-2">
+                                            <div class="text-xs text-gray-500 font-light mt-1 max-w-md line-clamp-2">
                                                 {{ $tiket->deskripsi }}
                                             </div>
                                         </td>
 
-                                        <td
-                                            class="px-8 py-5 font-semibold text-gray-900 uppercase tracking-wide text-xs">
-                                            {{ $namaPelanggan }}
-                                        </td>
-
-                                        <td class="px-8 py-5">
-                                            <span
-                                                class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ring-1
-                                            @if ($tiket->status == 'selesai') bg-green-50 text-green-600 ring-green-100
-                                            @elseif($tiket->status == 'proses') bg-blue-50 text-blue-600 ring-blue-100
-                                            @else bg-yellow-50 text-yellow-600 ring-yellow-100 @endif">
-                                                {{ $tiket->status }}
-                                            </span>
-                                        </td>
-
-                                        <td class="px-6 py-5 bg-gray-50/20 text-center">
-                                            <div class="max-w-xs mx-auto">
-                                                <div
-                                                    class="block w-full rounded-xl border-0 py-2 px-3 text-gray-900 shadow-sm ring-1 ring-gray-200 bg-gray-100 text-xs font-semibold">
-                                                    {{ $namaTeknisi }}
+                                        <td class="py-4 px-6">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white text-sm font-bold uppercase shrink-0">
+                                                    {{ Str::substr($namaPelanggan, 0, 1) }}
+                                                </div>
+                                                <div>
+                                                    <p class="text-xs font-bold text-gray-900 uppercase tracking-wide font-tegas leading-none">
+                                                        {{ $namaPelanggan }}
+                                                    </p>
+                                                    @if($pelanggan)
+                                                    <p class="text-[10px] text-gray-500 font-mono mt-1 leading-none">
+                                                        {{ $pelanggan->email }}
+                                                    </p>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </td>
 
-                                        {{-- <td class="px-8 py-5 text-center">
-                                            <form action="{{ route('pimpinan.tiket.destroy', $tiket->id) }}"
-                                                method="POST"
-                                                onsubmit="return confirm('BAHAYA MUTLAK: Apakah Anda yakin ingin menghapus tiket ini secara PERMANEN dari database?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                    class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase tracking-wider transition-colors duration-150">
-                                                    Eliminasi
-                                                </button>
-                                            </form>
-                                        </td> --}}
+                                        <td class="py-4 px-6">
+                                            @php
+                                                $normalizedStatus = ucwords(strtolower(trim($tiket->status)));
+                                            @endphp
+                                            <span class="inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider shadow-sm
+                                                @if (in_array($normalizedStatus, ['Open', 'Pending', 'Menunggu', 'Menunggu Verifikasi'])) bg-red-50 text-red-600 border border-red-100
+                                                @elseif(in_array($normalizedStatus, ['In Progress', 'Proses', 'Diproses', 'Dalam Proses'])) bg-slate-100 text-slate-600 border border-slate-200
+                                                @elseif(in_array($normalizedStatus, ['Resolved', 'Selesai', 'Selesai Diperbaiki'])) bg-emerald-50 text-emerald-600 border border-emerald-100
+                                                @else bg-gray-50 text-gray-600 border border-gray-200 @endif">
+                                                
+                                                <span class="w-1.5 h-1.5 rounded-full mr-1.5 animate-pulse
+                                                    @if (in_array($normalizedStatus, ['Open', 'Pending', 'Menunggu', 'Menunggu Verifikasi'])) bg-red-500
+                                                    @elseif(in_array($normalizedStatus, ['In Progress', 'Proses', 'Diproses', 'Dalam Proses'])) bg-slate-500
+                                                    @elseif(in_array($normalizedStatus, ['Resolved', 'Selesai', 'Selesai Diperbaiki'])) bg-emerald-500
+                                                    @else bg-gray-400 @endif"></span>
+                                                {{ $tiket->status }}
+                                            </span>
+                                        </td>
+
+                                        <td class="py-4 px-6 text-center">
+                                            <div class="max-w-xs mx-auto">
+                                                <span class="inline-flex items-center justify-center px-4 py-1.5 rounded-xl text-xs font-bold text-gray-700 bg-gray-50 border border-gray-200 shadow-sm min-h-[32px] min-w-[120px]">
+                                                    {{ $namaTeknisi }}
+                                                </span>
+                                            </div>
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

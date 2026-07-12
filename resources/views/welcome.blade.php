@@ -62,7 +62,7 @@
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="text-xs font-semibold uppercase tracking-widest text-gray-600 hover:text-gray-900 transition-colors py-2 px-3">
+                        <a href="{{ route('login') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-900 text-white hover:bg-red-600 rounded-xl text-xs font-bold uppercase tracking-widest shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
                             Log in
                         </a>
                     @endauth

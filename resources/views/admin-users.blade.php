@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -47,7 +47,7 @@
                         <h2 class="text-[1.75rem] font-extrabold text-[#111827] tracking-tight leading-tight">
                             Manajemen Pengguna
                         </h2>
-                        <p class="text-[0.95rem] font-medium text-gray-500 mt-1">Kelola daftar pelanggan, teknisi, dan pimpinan di sistem Anda.</p>
+                        <p class="text-[0.95rem] font-medium text-gray-500 mt-1">Kelola daftar pelanggan dan teknisi di sistem Anda.</p>
                     </div>
                 </div>
                 
@@ -70,26 +70,25 @@
                     </div>
                     
                     <div class="w-full sm:w-48 flex-none">
-                        <select name="role" onchange="this.form.submit()" class="block w-full py-3 px-4 bg-gray-50 border-0 text-sm font-extrabold text-gray-700 rounded-xl ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-[#ef233c] transition-all cursor-pointer">
+                        <select name="role" id="roleFilterSelect" class="block w-full py-3 px-4 bg-gray-50 border-0 text-sm font-extrabold text-gray-700 rounded-xl ring-1 ring-inset ring-gray-200 focus:ring-2 focus:ring-inset focus:ring-[#ef233c] transition-all cursor-pointer">
                             <option value="">Semua Peran</option>
                             <option value="pelanggan" {{ request('role') == 'pelanggan' ? 'selected' : '' }}>Pelanggan</option>
                             <option value="teknisi" {{ request('role') == 'teknisi' ? 'selected' : '' }}>Teknisi</option>
                         </select>
                     </div>
                     
-                    @if(request('search') || request('role'))
-                        <div class="w-full sm:w-auto flex-none">
-                            <a href="{{ route('admin.users') }}" class="w-full sm:w-auto px-5 py-3 bg-red-50 text-red-600 text-sm font-bold rounded-xl hover:bg-red-100 transition-all border border-red-100 text-center flex items-center justify-center gap-1.5 whitespace-nowrap">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
-                                Clear Filter
-                            </a>
-                        </div>
-                    @endif
+                    <div class="w-full sm:w-auto flex-none">
+                        <a href="{{ route('admin.users') }}" id="clearFilterBtn" 
+                           class="{{ (request('search') || request('role')) ? '' : 'hidden' }} w-full sm:w-auto px-5 py-3 bg-red-50 text-red-600 text-sm font-bold rounded-xl hover:bg-red-100 transition-all border border-red-100 text-center flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Clear Filter
+                        </a>
+                    </div>
                 </form>
             </div>
 
             {{-- ================= TABEL DATA PENGGUNA ================= --}}
-            <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden p-2 sm:p-4">
+            <div id="table-card" class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden p-2 sm:p-4">
                 <div class="overflow-x-auto rounded-[1.5rem]">
                     <table class="w-full text-left border-collapse min-w-max">
                         <thead>
@@ -297,21 +296,118 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // ================= LOGIKA AUTO SEARCH =================
+            // ================= LOGIKA AUTO SEARCH AJAX =================
+            const tableCard = document.getElementById('table-card');
             const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
+            const roleFilterSelect = document.getElementById('roleFilterSelect');
+            const clearFilterBtn = document.getElementById('clearFilterBtn');
+            const searchForm = searchInput ? searchInput.closest('form') : null;
+
+            if (tableCard && searchInput && roleFilterSelect && clearFilterBtn && searchForm) {
                 let delayTimer;
+
+                // Mencegah submit form bawaan browser agar tidak reload
+                searchForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    fetchResults();
+                });
+
+                // Input pencarian dengan debounce 300ms (sangat responsif & halus)
                 searchInput.addEventListener('input', function() {
                     clearTimeout(delayTimer);
                     delayTimer = setTimeout(function() {
-                        searchInput.closest('form').submit();
-                    }, 500); 
+                        fetchResults();
+                    }, 300);
                 });
 
-                if (searchInput.value !== '') {
-                    searchInput.focus();
-                    const textLength = searchInput.value.length;
-                    searchInput.setSelectionRange(textLength, textLength);
+                // Dropdown role diubah langsung melakukan fetch
+                roleFilterSelect.addEventListener('change', function() {
+                    fetchResults();
+                });
+
+                // Intersept klik tombol Clear Filter secara AJAX
+                clearFilterBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    searchInput.value = '';
+                    roleFilterSelect.value = '';
+                    fetchResults();
+                });
+
+                // Intersept klik link pagination secara AJAX (jika ada)
+                tableCard.addEventListener('click', function(e) {
+                    const link = e.target.closest('a');
+                    if (link && link !== clearFilterBtn && link.href) {
+                        // Pastikan link bukan untuk hapus user atau aksi lain
+                        const isActionLink = link.innerText.toLowerCase().includes('hapus') || link.href.includes('destroy') || link.href.includes('libur');
+                        if (!isActionLink) {
+                            e.preventDefault();
+                            fetchResults(link.href);
+                        }
+                    }
+                });
+
+                // Fungsi utama AJAX Fetching untuk reload tabel saja
+                function fetchResults(targetUrl = null) {
+                    let url;
+                    if (targetUrl) {
+                        url = new URL(targetUrl);
+                    } else {
+                        url = new URL(searchForm.action);
+                        const params = new URLSearchParams(new FormData(searchForm));
+                        url.search = params.toString();
+                    }
+
+                    // Tambahkan efek loading (transisi opacity halus)
+                    const tbody = tableCard.querySelector('tbody');
+                    const pagination = tableCard.querySelector('.border-t');
+                    if (tbody) tbody.style.opacity = '0.4';
+                    if (pagination) pagination.style.opacity = '0.4';
+
+                    fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                        .then(response => response.text())
+                        .then(html => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            
+                            const newTableCard = doc.getElementById('table-card');
+                            if (newTableCard) {
+                                // Ganti isi dari table saja agar input search tetap fokus & kursor tidak lari
+                                const currentTable = tableCard.querySelector('table');
+                                const newTable = newTableCard.querySelector('table');
+                                if (currentTable && newTable) {
+                                    currentTable.outerHTML = newTable.outerHTML;
+                                }
+
+                                // Update link pagination jika ada
+                                const currentPagination = tableCard.querySelector('.border-t');
+                                const newPagination = newTableCard.querySelector('.border-t');
+                                if (currentPagination && newPagination) {
+                                    currentPagination.outerHTML = newPagination.outerHTML;
+                                } else if (currentPagination && !newPagination) {
+                                    currentPagination.remove();
+                                } else if (!currentPagination && newPagination) {
+                                    tableCard.appendChild(newPagination);
+                                }
+                            }
+
+                            // Toggle tombol clear filter secara dinamis
+                            if (searchInput.value !== '' || roleFilterSelect.value !== '') {
+                                clearFilterBtn.classList.remove('hidden');
+                            } else {
+                                clearFilterBtn.classList.add('hidden');
+                            }
+
+                            // Update history URL di browser tanpa reload
+                            window.history.pushState({}, '', url.toString());
+
+                            if (tbody) tbody.style.opacity = '1';
+                            if (pagination) pagination.style.opacity = '1';
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            if (tbody) tbody.style.opacity = '1';
+                            if (pagination) pagination.style.opacity = '1';
+                        });
                 }
             }
 

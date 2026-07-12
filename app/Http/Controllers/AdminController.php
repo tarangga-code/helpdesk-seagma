@@ -243,8 +243,8 @@ class AdminController extends Controller
     {
         $query = \App\Models\User::query();
 
-        // Blokir akun admin utama agar tidak muncul di daftar kelola user
-        $query->where('role', '!=', 'admin');
+        // Blokir akun admin utama dan pimpinan agar tidak muncul di daftar kelola user admin
+        $query->whereNotIn('role', ['admin', 'pimpinan']);
         
         // Filter Berdasarkan Role 
         if ($request->filled('role')) {
