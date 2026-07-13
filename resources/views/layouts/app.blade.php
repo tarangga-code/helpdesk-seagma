@@ -6,11 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? config('app.name', 'Laravel') }}</title>
+    <title>{{ (isset($title) ? $title : ($attributes->get('title') ?? 'Portal Helpdesk')) }} - PT Seagma</title>
 
-    <link rel="icon" type="image/png" href="{{ asset('images/logo-tab.png') }}">
-
-    <link rel="icon" type="image/jpeg" href="{{ asset('images/QAzwEeco_400x400.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])

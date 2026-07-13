@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout title="Kelola Kategori">
     <div class="min-h-[calc(100vh-64px)] sm:min-h-[calc(100vh-80px)] bg-slate-50 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pb-12">
         <div class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 pt-8">
 

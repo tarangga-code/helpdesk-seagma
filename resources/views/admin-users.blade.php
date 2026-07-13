@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Kelola Akun Pengguna">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');

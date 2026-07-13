@@ -1,4 +1,4 @@
-﻿<x-app-layout>
+<x-app-layout title="Dashboard Teknisi">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
 
